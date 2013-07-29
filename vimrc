@@ -13,17 +13,16 @@ Bundle 'gmarik/vundle'
 Bundle 'tpope/vim-fugitive'
 Bundle 'Valloric/YouCompleteMe'
 Bundle 'Lokaltog/vim-easymotion'
-Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-Bundle 'tpope/vim-rails.git'
 Bundle 'L9'
-Bundle 'FuzzyFinder'
-Bundle 'git://git.wincent.com/command-t.git'
 Bundle 'scrooloose/syntastic'
 Bundle 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
-Bundle 'Lokaltog/powerline-fonts',
 Bundle 'taglist.vim',
 Bundle 'nerdtree',
 Bundle 'SirVer/ultisnips',
+Bundle 'FuzzyFinder',
+Bundle 'a.vim',
+Bundle 'bufexplorer.zip',
+
 
 " ------------GENERAL SECTION------------"
 set t_Co=256
@@ -31,6 +30,7 @@ filetype plugin indent on     " required!
 
 au BufRead,BufNewFile *.logcat set filetype=logcat
 set number
+set ruler
 :syntax on
 set cursorline
 set mouse=a
@@ -45,11 +45,10 @@ set tabstop=8
 set shiftwidth=8
 set textwidth=120
 set expandtab
-:hi CursorLine   cterm=NONE ctermbg=darkgray ctermfg=white guibg=darkred guifg=white
+set autowrite
+:hi CursorLine   cterm=NONE ctermbg=gray ctermfg=black guibg=gray guifg=black
 " ------------CTAGS SECTION------------"
-" -- ctags --
-" map <ctrl>+F12 to generate ctags for current folder:
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f --exclude=prebuilt* --exclude=docs --exclude=out .<CR><CR> " add current directory's generated tags file to available tags set tags+=./tags
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f . <CR> 
 
 " TlistToggle and NERDTreeToggle shortcut
 map <C-F6> :NERDTreeToggle <CR><CR>
@@ -60,6 +59,7 @@ map <C-F9> :CCTreeLoadDB <CR><CR>
 :let Tlist_Show_One_File = 1
 :let Tlist_Exit_OnlyWindow = 1
 :let Tlist_Use_Right_Window = 1
+let tlist_cpp_settings = 'c++;n:namespace;v:variable;d:macro;t:typedef;c:class;g:enum;s:struct;u:union;f:function;m:member;p:prototype'
 
 " let g:CCTreeKeyTraceForwardTree = '<C-p>' 
 " let g:CCTreeKeyTraceReverseTree = '<C-o>' 
@@ -79,21 +79,26 @@ map <C-F9> :CCTreeLoadDB <CR><CR>
 
 noremap <c-s-up> :call feedkeys( line('.')==1 ? '' : 'ddkP' )<CR>
 noremap <c-s-down> ddp
-
 noremap <C-right> <Esc><C-W>l
+noremap <C-up> <Esc><C-W>k
+noremap <C-down> <Esc><C-W>j
 noremap <C-left> <Esc><C-W>h
+inoremap <c-s> <c-o>:w<CR>
+noremap <c-s> :w<CR>
+noremap <c-x> :q!<CR>
+noremap <F4> :A<CR>
+nnoremap <esc> :noh<CR>
 
 if has("gui_running")
-  " GUI is running or is about to start.
-  " Maximize gvim window.
   set guifont=DejaVu\ Sans\ Mono\ 9
   set lines=45 columns=120
 endif
 
 " ------------YouCompleteMe SECTION-----------------"
-let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
 "let g:ycm_key_list_previous_completion=['<Up>']
+nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
 
 " ------------Syntastic SECTION-----------------"
 let g:syntastic_enable_signs=1
@@ -102,7 +107,7 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 let g:syntastic_auto_loc_list=1
-let g:syntastic_cpp_checkers=['cpplint', 'ycm']
+let g:syntastic_cpp_checkers=['ycm', 'cpplint']
 
 "-----------PowerLine SECTION---------------"
 let g:Powerline_symbols = 'fancy'
@@ -113,6 +118,16 @@ set encoding=utf-8
 let g:UltiSnipsExpandTrigger = "<c-j>"
 let g:UltiSnipsJumpForwardTrigger = "<c-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
+let g:UltiSnipsListSnippets = '<c-l>'
 
 colorscheme nature
 colorscheme baycomb
+
+"--------------------------------------------"
+" Keep files centralized, don't create swapfiles
+set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
+set noswapfile
+
+" Show search match while typing
+set incsearch
