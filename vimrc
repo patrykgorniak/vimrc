@@ -23,6 +23,7 @@ Bundle 'FuzzyFinder',
 Bundle 'a.vim',
 Bundle 'bufexplorer.zip',
 Bundle 'jalcine/cmake.vim',
+Bundle 'headerguard.vim',
 
 
 " ------------GENERAL SECTION------------"
@@ -123,7 +124,7 @@ let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
 let g:UltiSnipsListSnippets = '<c-l>'
 
 colorscheme nature
-colorscheme baycomb
+colorscheme FU
 
 "--------------------------------------------"
 " Keep files centralized, don't create swapfiles
