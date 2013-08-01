@@ -22,6 +22,7 @@ Bundle 'SirVer/ultisnips',
 Bundle 'FuzzyFinder',
 Bundle 'a.vim',
 Bundle 'bufexplorer.zip',
+Bundle 'jalcine/cmake.vim',
 
 
 " ------------GENERAL SECTION------------"
@@ -88,9 +89,10 @@ noremap <c-s> :w<CR>
 noremap <c-x> :q!<CR>
 noremap <F4> :A<CR>
 nnoremap <esc> :noh<CR>
+map <C-i> :%!astyle -A4<CR>
 
 if has("gui_running")
-  set guifont=DejaVu\ Sans\ Mono\ 9
+  set guifont=Ubuntu\ Mono\ for\ Powerline\ 10
   set lines=45 columns=120
 endif
 
@@ -131,3 +133,13 @@ set noswapfile
 
 " Show search match while typing
 set incsearch
+
+"-------------Fuzzy Finder--------------------
+let g:fuf_modesDisable = []
+let g:fuf_mrufile_maxItem = 400
+let g:fuf_mrucmd_maxItem = 400
+
+nnoremap <silent> <C-f>f :FufFile<CR>
+nnoremap <silent> <C-f>b :FufBuffer<CR>
+nnoremap <silent> <C-f>t :FufTag<CR>
+nnoremap <silent> <C-f>T :FufTagWithCursorWord!<CR>
