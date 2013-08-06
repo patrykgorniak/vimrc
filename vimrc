@@ -24,6 +24,7 @@ Bundle 'a.vim',
 Bundle 'bufexplorer.zip',
 Bundle 'jalcine/cmake.vim',
 Bundle 'headerguard.vim',
+Bundle 'CCTree',
 
 
 " ------------GENERAL SECTION------------"
@@ -50,34 +51,35 @@ set expandtab
 set autowrite
 :hi CursorLine   cterm=NONE ctermbg=gray ctermfg=black guibg=gray guifg=black
 " ------------CTAGS SECTION------------"
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f . <CR> 
+map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f -f .vimprj/<CR> 
+set tags=.vimprj/tags
 
 " TlistToggle and NERDTreeToggle shortcut
 map <C-F6> :NERDTreeToggle <CR><CR>
 map <C-F5> :TlistToggle <CR><CR>
 map <C-F10> :BufExplorer <CR>
 map <C-F9> :CCTreeLoadDB <CR><CR>
+map <C-B> :make <CR>:
 
 :let Tlist_Show_One_File = 1
 :let Tlist_Exit_OnlyWindow = 1
 :let Tlist_Use_Right_Window = 1
 let tlist_cpp_settings = 'c++;n:namespace;v:variable;d:macro;t:typedef;c:class;g:enum;s:struct;u:union;f:function;m:member;p:prototype'
 
-" let g:CCTreeKeyTraceForwardTree = '<C-p>' 
-" let g:CCTreeKeyTraceReverseTree = '<C-o>' 
-" let g:CCTreeKeyHilightTree = '<C-l>'        " Static highlighting
-" let g:CCTreeKeyToggleWindow = '<C-F7>' 
-" let g:CCTreeKeyCompressTree = 'zs'     " Compress call-tree 
-" let g:CCTreeKeyDepthPlus = '<C-\>=' 
-" let g:CCTreeKeyDepthMinus = '<C-\>-'
-" let g:CCTreeWindowWidth = 40
+let g:CCTreeKeyTraceForwardTree = '<C-p>' 
+let g:CCTreeKeyTraceReverseTree = '<C-o>' 
+let g:CCTreeKeyHilightTree = '<C-l>'        " Static highlighting
+let g:CCTreeKeyToggleWindow = '<C-F7>' 
+let g:CCTreeKeyCompressTree = 'zs'     " Compress call-tree 
+let g:CCTreeKeyDepthPlus = '<C-\>=' 
+let g:CCTreeKeyDepthMinus = '<C-\>-'
+let g:CCTreeWindowWidth = 40
 
-":let Grep_Default_Filelist = '*.c *.cpp *.asm *.java *.aidl' 
-"set listchars=tab:>-,trail:-
-"set list
+:let Grep_Default_Filelist = '*.c *.cpp *.asm *.java *.aidl' 
+set listchars=tab:>-,trail:-
+set list
 
-"set tags+=./tags
-"set tags+=~/.vim/tags/android
+set tags+=.vimprj/tags,./tags
 
 noremap <c-s-up> :call feedkeys( line('.')==1 ? '' : 'ddkP' )<CR>
 noremap <c-s-down> ddp
@@ -87,7 +89,7 @@ noremap <C-down> <Esc><C-W>j
 noremap <C-left> <Esc><C-W>h
 inoremap <c-s> <c-o>:w<CR>
 noremap <c-s> :w<CR>
-noremap <c-x> :q!<CR>
+noremap <c-x> :Bclose!<CR>
 noremap <F4> :A<CR>
 nnoremap <esc> :noh<CR>
 map <C-i> :%!astyle -A4<CR>
@@ -123,8 +125,7 @@ let g:UltiSnipsJumpForwardTrigger = "<c-j>"
 let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
 let g:UltiSnipsListSnippets = '<c-l>'
 
-colorscheme nature
-colorscheme FU
+colorscheme fu
 
 "--------------------------------------------"
 " Keep files centralized, don't create swapfiles
@@ -144,3 +145,20 @@ nnoremap <silent> <C-f>f :FufFile<CR>
 nnoremap <silent> <C-f>b :FufBuffer<CR>
 nnoremap <silent> <C-f>t :FufTag<CR>
 nnoremap <silent> <C-f>T :FufTagWithCursorWord!<CR>
+
+
+"--------------Fugitive-----------------------
+nnoremap <silent> <C-g>s :Gstatus<CR>
+
+
+"---------------QuickFix----------------------
+" Automatically open, but do not go to (if there are errors) the quickfix /
+" location list window, or close it when is has become empty.
+"
+" Note: Must allow nesting of autocmds to enable any customizations for quickfix
+" buffers.
+" Note: Normally, :cwindow jumps to the quickfix window if the command opens it
+" (but not if it's already open). However, as part of the autocmd, this doesn't
+" seem to happen.
+autocmd QuickFixCmdPost [^l]* nested cwindow
+autocmd QuickFixCmdPost    l* nested lwindow
