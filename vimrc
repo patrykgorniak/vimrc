@@ -4,20 +4,35 @@ filetype off
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
-Plugin 'gmarik/vundle'
+Plugin 'VundleVim/Vundle.vim'
 Plugin 'Valloric/YouCompleteMe'
-"Plugin 'Lokaltog/vim-easymotion' 
-"Plugin 'L9'
-Plugin 'scrooloose/syntastic'
-Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
-Plugin 'taglist.vim',
-Plugin 'https://github.com/scrooloose/nerdtree',
 Plugin 'SirVer/ultisnips',
 Plugin 'honza/vim-snippets'
+
+Plugin 'scrooloose/syntastic' " syntax checking tool
+" Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
+Plugin 'powerline/fonts'
+Plugin 'vim-airline/vim-airline',
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'bling/vim-bufferline',
+Plugin 'tpope/vim-commentary',
+Plugin 'bronson/vim-trailing-whitespace',
+Plugin 'majutsushi/tagbar',
+Plugin 'scrooloose/nerdtree',
+Plugin 'jistr/vim-nerdtree-tabs.git',
 Plugin 'a.vim',
 Plugin 'bufexplorer.zip',
 Plugin 'Colour-Sampler-Pack',
-Plugin 'ctrlp.vim',
+Plugin 'sheerun/vim-polyglot',
+Plugin 'airblade/vim-gitgutter',
+Plugin 'ctrlpvim/ctrlp.vim',
+Plugin 'xolox/vim-session',
+Plugin 'xolox/vim-misc',
+Plugin 'Shougo/vimshell.vim',
+Plugin 'Shougo/vimproc.vim',
+Plugin 'fugitive.vim',
+Plugin 'vim-scripts/c.vim'
+
 "Plugin 'FuzzyFinder',
 "Plugin 'matchit.zip',
 "Plugin 'surround.vim',
@@ -27,47 +42,124 @@ Plugin 'ctrlp.vim',
 "Plugin 'DfrankUtil',
 "Plugin 'vimprj',
 "Plugin 'tComment',
-"Plugin 'fugitive.vim',
-"Plugin 'git.zip',
-"Plugin 'vim-ruby/vim-ruby',
-"Plugin 'Solarized',
 "Plugin 'https://github.com/klen/python-mode'
 call vundle#end()
 
 " ------------GENERAL SECTION------------"
 filetype plugin indent on
-autocmd! BufWritePost .vimrc source %
 filetype indent on
+autocmd! BufWritePost .vimrc source %
+"*****************************************************************************
+"" Basic Setup
+"*****************************************************************************"
+"" Encoding
+set encoding=utf-8
+set fileencoding=utf-8
+set fileencodings=utf-8
+
+"" Fix backspace indent
+set backspace=indent,eol,start
+
+"" Tabs. May be overriten by autocmd rules
+set tabstop=4
+set softtabstop=0
+set shiftwidth=4
+set expandtab
+
+"" Map leader to ,
+let mapleader=','
+
+"" Enable hidden buffers
+set hidden
+
+"" Searching
+set hlsearch
+set incsearch
+set ignorecase
+set smartcase
+
+"" Encoding
+set bomb
+set binary
+set ttyfast
+
+""  Keep files centralized, don't create swapfiles
+set noswapfile
+set nobackup
+
+set fileformats=unix,dos,mac
+set showcmd
+set shell=/bin/bash
+noremap <leader>sh :VimShellCreate <CR>
+" noremap <leader>sc :VimShellClose <CR>
+
+" session management
+let g:session_directory = "~/.vim/session"
+let g:session_autoload = "no"
+let g:session_autosave = "no"
+let g:session_command_aliases = 1
+
+
+"*****************************************************************************
+"" Autocmd Rules
+"*****************************************************************************
+"" The PC is fast enough, do syntax highlight syncing from start
+augroup vimrc-sync-fromstart
+  autocmd!
+  autocmd BufEnter * :syntax sync fromstart
+augroup END
+
+"" Remember cursor position
+augroup vimrc-remember-cursor-position
+  autocmd!
+  autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+augroup END
+
+:autocmd CursorMoved * exe printf('match MatchParen /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+
+" "" txt
+" augroup vimrc-wrapping
+"   autocmd!
+"   autocmd BufRead,BufNewFile *.txt call s:setupWrapping()
+" augroup END
+
+"" make/cmake
+augroup vimrc-make-cmake
+  autocmd!
+  autocmd FileType make setlocal noexpandtab
+  autocmd BufNewFile,BufRead CMakeLists.txt setlocal filetype=cmake
+augroup END
+
+"*****************************************************************************
+"" Visual Settings
+"*****************************************************************************
 syntax on
 set number
 set ruler
+
+set sc
 set cursorline
 set mouse=a
-set bs=2
-set hlsearch
+set laststatus=2
+" set bs=2
 set autoindent
-set foldmethod=syntax  "fold based on indent
-set foldnestmax=10      "deepest fold is 10 levels
-set nofoldenable        "dont fold by default
-set foldlevel=1         "this is just what i use
-set tabstop=4
-set shiftwidth=4
-set expandtab
+" set foldmethod=syntax  "fold based on indent
+" set foldnestmax=10      "deepest fold is 10 levels
+" set nofoldenable        "dont fold by default
+" set foldlevel=1         "this is just what i use
 set textwidth=120
-set autowrite
+" set autowrite
+set autoread
 set nowrap
-set splitright
-let mapleader = ","
-set history=700
-set undolevels=700
-set incsearch
-colorscheme fu
+" set splitright
+" set history=700
+" set undolevels=700
+colorscheme herald
 hi CursorLine   cterm=NONE ctermbg=gray ctermfg=black guibg=gray guifg=black
-au BufRead,BufNewFile *.logcat set filetype=logcat
+" au BufRead,BufNewFile *.logcat set filetype=logcat
 
 "----------------ShortCuts----------------"
-
-noremap <c-s-up> :call feedkeys( line('.')==1 ? '' : 'ddkP' )<CR>
+noremap <c-s-up> :call feedkeys( line('.')==1 ? '' : 'ddkP' )<CR> 
 noremap <c-s-down> ddp
 
 noremap <C-right> <Esc><C-W>l
@@ -78,88 +170,150 @@ noremap <C-left> <Esc><C-W>h
 vnoremap < <gv
 vnoremap > >gv
 
-noremap <c-x> :Bclose!<CR>
+"Next/Prev buffer
+noremap <leader>n :bn<CR>
+noremap <leader>p :bp<CR>
+"Close buffer
+noremap <leader>c :bp<bar>sp<bar>bn<bar>bd<CR>
+
 noremap <F4> :A<CR>
 noremap <C-s> :w<CR>
 inoremap <C-s> <C-o>:w<CR>
-
 nnoremap <esc> :nohl<CR>
-noremap <C-n> :nohl<CR>
-vnoremap <C-n> :nohl<CR>
-inoremap <C-n> :nohl<CR>
 
+set title
+set titleold="Terminal"
+set titlestring=%F
+
+set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
 "-------------- Mark unwanted spaces --------------"
-:highlight ExtraWhitespace ctermbg=red guibg=red
-":autocmd ColorScheme fu highlight ExtraWhitespace ctermbg=red guibg=red
-:au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
-:au InsertLeave * match ExtraWhitespace /\s\+$/
-
-" ---------------- UltiSnips ---------------------------"
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<leader>u"
-let g:UltiSnipsJumpForwardTrigger="<c-n>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
-
-
-" ----------------TlistToggle and NERDTreeToggle shortcut---------------------------"
-map <C-F6> :NERDTreeToggle <CR><CR>
-map <C-F5> :TlistToggle <CR><CR>
-map <C-F10> :BufExplorer <CR>
-map <C-F9> :CCTreeLoadDB <CR><CR>
-" map <C-B> :make <CR>
+":highlight ExtraWhitespace ctermbg=red guibg=red
+":au InsertEnter * match ExtraWhitespace /\s\+\%#\@<!$/
+":au InsertLeave * match ExtraWhitespace /\s\+$/
 
 " ------------YouCompleteMe SECTION-----------------"
 "let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
-"let g:ycm_key_list_previous_completion=['<Up>']
+let g:ycm_key_list_select_completion = []
+let g:ycm_key_list_previous_completion = []
 nnoremap <leader>jd :YcmCompleter GoToDefinitionElseDeclaration<CR>
-let g:ycm_key_list_select_completion = ['<TAB>', '<Down>']
 
+" "-------------------- vim-airline ------------------"
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'murmur'
+let g:airline#extensions#syntastic#enabled = 1
+let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tagbar#enabled = 1
+let g:airline_left_sep=''
+let g:airline_right_sep=''
 
-" ------------TLIST_SECTION-----------------"
-let Tlist_Show_One_File = 1
-let Tlist_Exit_OnlyWindow = 1
-let Tlist_Use_Right_Window = 1
-let tlist_cpp_settings = 'c++;n:namespace;v:variable;d:macro;t:typedef;c:class;g:enum;s:struct;u:union;f:function;m:member;p:prototype'
+" " ---------------- UltiSnips ---------------------------"
+let g:UltiSnipsExpandTrigger = "<tab>"
+let g:UltiSnipsJumpForwardTrigger = "<tab>"
+let g:UltiSnipsJumpBackwardTrigger = "<s-tab>"
+let g:UltiSnipsEditSplit="vertical"
 
-"------ Keep files centralized, don't create swapfiles
-set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
-set noswapfile
+" session management
+nnoremap <leader>so :OpenSession<Space>
+nnoremap <leader>ss :SaveSession<Space>
+nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sc :CloseSession<CR>
+
+"*****************************************************************************
+"" Abbreviations
+"*****************************************************************************
+"" no one is really happy until you have this shortcuts
+cnoreabbrev W! w!
+cnoreabbrev Q! q!
+cnoreabbrev Qall! qall!
+cnoreabbrev Wq wq
+cnoreabbrev Wa wa
+cnoreabbrev wQ wq
+cnoreabbrev WQ wq
+cnoreabbrev W w
+cnoreabbrev Q q
+cnoreabbrev Qall qall
+
+if exists("*fugitive#statusline")
+  set statusline+=%{fugitive#statusline()}
+endif
+
+" " ----------------shortcut---------------------------"
+"" Git
+noremap <Leader>ga :Gwrite<CR>
+noremap <Leader>gc :Gcommit<CR>
+noremap <Leader>gsh :Gpush<CR>
+noremap <Leader>gll :Gpull<CR>
+noremap <Leader>gs :Gstatus<CR>
+noremap <Leader>gb :Gblame<CR>
+noremap <Leader>gd :Gvdiff<CR>
+noremap <Leader>gr :Gremove<CR>
+
+"" NERDTree configuration
+let g:NERDTreeChDirMode=2
+let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
+let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
+let g:NERDTreeShowBookmarks=1
+let g:nerdtree_tabs_focus_on_files=1
+let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
+let g:NERDTreeWinSize = 30
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
+
+" Shortcuts
+nnoremap <silent> <F2> :NERDTreeFind<CR>
+noremap <F5> :NERDTreeToggle<CR>
+
+noremap <F6> :TagbarToggle<CR><CR>
+let g:tagbar_autofocus = 1
+
+noremap <F10> :BufExplorer <CR>
+
+" "------------- Make shortcuts and quickFix window with errors ------------------"
+set makeprg=make\ -C\ build
+map <C-B> :make<CR>
+autocmd QuickFixCmdPost [^l]* nested cwindow
+autocmd QuickFixCmdPost    l* nested lwindow
 
 " ------------Syntastic SECTION-----------------"
 let g:syntastic_enable_signs=1
 let g:syntastic_stl_format = '[%E{Err: %fe #%e}%B{, }%W{Warn: %fw #%w}]'
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-"let g:syntastic_auto_loc_list=1
 let g:syntastic_cpp_checkers=['ycm', 'cpplint']
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_error_symbol='✗'
+let g:syntastic_warning_symbol='⚠'
+let g:syntastic_style_error_symbol = '✗'
+let g:syntastic_style_warning_symbol = '⚠'
+let g:syntastic_auto_loc_list=1
+let g:syntastic_aggregate_errors = 1
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
+"let g:syntastic_auto_loc_list=1
 
 " ------------CTAGS SECTION------------"
 map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f . && cscope -Rb <CR>
 
-
-"-----------PowerLine SECTION---------------"
-let g:Powerline_symbols = 'fancy'
-set laststatus=2
-set encoding=utf-8
-
-
 if has("gui_running")
-    set t_Co=256
-    set guifont=Ubuntu\ Mono\ for\ Powerline\ 10
+    set guifont=Inconsolata\ for\ Powerline\ 10
+
+  if $COLORTERM == 'gnome-terminal'
+    set term=gnome-256color
+  else
+    if $TERM == 'xterm'
+      set term=xterm-256color
+    endif
+  endif
+
 endif
 
+if &term =~ '256color'
+  set t_ut=
+endif
 
-
-
-
-
-
-
+" if has("gui_running")
+"     set t_Co=256
+" endif
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -347,4 +501,46 @@ if has("cscope")
     " timeoutlent (default: 1000 = 1 second, which is sluggish) is used.
     "
     "set ttimeoutlen=100
+endif
+
+
+"*****************************************************************************
+"" Convenience variables
+"*****************************************************************************
+
+" vim-airline
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+
+if !exists('g:airline_powerline_fonts')
+  let g:airline#extensions#tabline#left_sep = ' '
+  let g:airline#extensions#tabline#left_alt_sep = '|'
+  let g:airline_left_sep          = '▶'
+  let g:airline_left_alt_sep      = '»'
+  let g:airline_right_sep         = '◀'
+  let g:airline_right_alt_sep     = '«'
+  let g:airline#extensions#branch#prefix     = '⤴' "➔, ➥, ⎇
+  let g:airline#extensions#readonly#symbol   = '⊘'
+  let g:airline#extensions#linecolumn#prefix = '¶'
+  let g:airline#extensions#paste#symbol      = 'ρ'
+  let g:airline_symbols.linenr    = '␊'
+  let g:airline_symbols.branch    = '⎇'
+  let g:airline_symbols.paste     = 'ρ'
+  let g:airline_symbols.paste     = 'Þ'
+  let g:airline_symbols.paste     = '∥'
+  let g:airline_symbols.whitespace = 'Ξ'
+else
+  let g:airline#extensions#tabline#left_sep = ''
+  let g:airline#extensions#tabline#left_alt_sep = ''
+
+  " powerline symbols
+  let g:airline_left_sep = ''
+  let g:airline_left_alt_sep = ''
+  let g:airline_right_sep = ''
+  let g:airline_right_alt_sep = ''
+  let g:airline_symbols.branch = ''
+  let g:airline_symbols.readonly = ''
+  let g:airline_symbols.linenr = ''
 endif
