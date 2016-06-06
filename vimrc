@@ -31,7 +31,8 @@ Plugin 'xolox/vim-misc',
 Plugin 'Shougo/vimshell.vim',
 Plugin 'Shougo/vimproc.vim',
 Plugin 'fugitive.vim',
-Plugin 'vim-scripts/c.vim'
+Plugin 'vim-scripts/c.vim',
+Plugin 'jaxbot/semantic-highlight.vim'
 
 "Plugin 'FuzzyFinder',
 "Plugin 'matchit.zip',
@@ -49,6 +50,7 @@ call vundle#end()
 filetype plugin indent on
 filetype indent on
 autocmd! BufWritePost .vimrc source %
+
 "*****************************************************************************
 "" Basic Setup
 "*****************************************************************************"
@@ -107,6 +109,7 @@ let g:session_command_aliases = 1
 augroup vimrc-sync-fromstart
   autocmd!
   autocmd BufEnter * :syntax sync fromstart
+  autocmd BufEnter *.py,*.cpp,*.c,*.h,*.hpp :SemanticHighlight
 augroup END
 
 "" Remember cursor position
@@ -115,7 +118,7 @@ augroup vimrc-remember-cursor-position
   autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 augroup END
 
-:autocmd CursorMoved * exe printf('match MatchParen /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+:autocmd CursorMoved *.cpp,*.c,*.hpp,*.h exe printf('match MatchParen /\V\<%s\>/', escape(expand('<cword>'), '/\'))
 
 " "" txt
 " augroup vimrc-wrapping
@@ -155,7 +158,7 @@ set nowrap
 " set history=700
 " set undolevels=700
 colorscheme herald
-hi CursorLine   cterm=NONE ctermbg=gray ctermfg=black guibg=gray guifg=black
+" hi CursorLine   cterm=NONE ctermbg=gray ctermfg=black guibg=gray guifg=black
 " au BufRead,BufNewFile *.logcat set filetype=logcat
 
 "----------------ShortCuts----------------"
@@ -274,6 +277,7 @@ set makeprg=make\ -C\ build
 map <C-B> :make<CR>
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
+set errorformat=%*[^\"]\"%f\"%*\\D%l:\ %m,\"%f\"%*\\D%l:\ %m,%-G%f:%l:\ (Each\ undeclared\ identifier\ is\ reported\ only\ once,%-G%f:%l:\ for\ each\ function\ it\ appears\ in.),%-GIn\ file\ included\ from\ %f:%l:%c:,%-GIn\ file\ included\ from\ %f:%l:%c,%-GIn\ file\ included\ from\ %f:%l,%-Gfrom\ %f:%l:%c,%-Gfrom\ %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,%D%*\\a[%*\\d]:\ Entering\ directory\ `%f',%X%*\\a[%*\\d]:\ Leaving\ directory\ `%f',%D%*\\a:\ Entering\ directory\ `%f',%X%*\\a:\ Leaving\ directory\ `%f',%DMaking\ %*\\a\ in\ %f,%f\|%l\|\ %m
 
 " ------------Syntastic SECTION-----------------"
 let g:syntastic_enable_signs=1
@@ -297,13 +301,13 @@ map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f . && c
 if has("gui_running")
     set guifont=Inconsolata\ for\ Powerline\ 10
 
-  if $COLORTERM == 'gnome-terminal'
-    set term=gnome-256color
-  else
-    if $TERM == 'xterm'
-      set term=xterm-256color
-    endif
-  endif
+  " if $COLORTERM == 'gnome-terminal'
+  "   set term=gnome-256color
+  " else
+  "   if $TERM == 'xterm'
+  "     set term=xterm-256color
+  "   endif
+  " endif
 
 endif
 
@@ -361,6 +365,7 @@ if has("cscope")
 
     " add any cscope database in current directory
     if filereadable("cscope.out")
+		cs kill 0
         cs add cscope.out
     " else add the database pointed to by environment variable
     elseif $CSCOPE_DB != ""
