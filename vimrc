@@ -109,7 +109,7 @@ let g:session_command_aliases = 1
 augroup vimrc-sync-fromstart
   autocmd!
   autocmd BufEnter * :syntax sync fromstart
-  autocmd BufEnter *.py,*.cpp,*.c,*.h,*.hpp :SemanticHighlight
+  autocmd BufEnter,BufWrite,BufRead *.py,*.cpp,*.c,*.h,*.hpp :SemanticHighlight
 augroup END
 
 "" Remember cursor position
