@@ -32,7 +32,8 @@ Plugin 'Shougo/vimshell.vim',
 Plugin 'Shougo/vimproc.vim',
 Plugin 'fugitive.vim',
 Plugin 'vim-scripts/c.vim',
-Plugin 'jaxbot/semantic-highlight.vim'
+Plugin 'jaxbot/semantic-highlight.vim',
+Plugin 'Townk/vim-autoclose'
 
 "Plugin 'FuzzyFinder',
 "Plugin 'matchit.zip',
@@ -296,7 +297,7 @@ let g:syntastic_aggregate_errors = 1
 "let g:syntastic_auto_loc_list=1
 
 " ------------CTAGS SECTION------------"
-map <C-F12> :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q --extra=+f . && cscope -Rb <CR>
+map <C-F12> :!ctags -R --sort=1 --c++-kinds=+pl --fields=+iaS --extra=+q --extra=+f . && cscope -Rb <CR>
 
 if has("gui_running")
     set guifont=Inconsolata\ for\ Powerline\ 10
