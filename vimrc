@@ -11,7 +11,8 @@ Plugin 'honza/vim-snippets'
 
 Plugin 'scrooloose/syntastic' " syntax checking tool
 " Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
-Plugin 'powerline/fonts'
+Plugin 'powerline/fonts',
+Plugin 'rhysd/vim-clang-format',
 Plugin 'vim-airline/vim-airline',
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'bling/vim-bufferline',
@@ -183,7 +184,7 @@ noremap <leader>c :bp<bar>sp<bar>bn<bar>bd<CR>
 noremap <F4> :A<CR>
 noremap <C-s> :w<CR>
 inoremap <C-s> <C-o>:w<CR>
-nnoremap <esc> :nohl<CR>
+nnoremap <Esc> :nohl<CR>
 
 set title
 set titleold="Terminal"
@@ -196,7 +197,7 @@ set statusline=%F%m%r%h%w%=(%{&ff}/%Y)\ (line\ %l\/%L,\ col\ %c)\
 ":au InsertLeave * match ExtraWhitespace /\s\+$/
 
 " ------------YouCompleteMe SECTION-----------------"
-"let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
+let g:ycm_global_ycm_extra_conf = '~/.vim/.ycm_extra_conf.py'
 let g:ycm_confirm_extra_conf = 0
 let g:ycm_key_list_select_completion = []
 let g:ycm_key_list_previous_completion = []
@@ -268,7 +269,7 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
 nnoremap <silent> <F2> :NERDTreeFind<CR>
 noremap <F5> :NERDTreeToggle<CR>
 
-noremap <F6> :TagbarToggle<CR><CR>
+noremap <F6> :TagbarOpenAutoClose<CR><CR>
 let g:tagbar_autofocus = 1
 
 noremap <F10> :BufExplorer <CR>
@@ -279,6 +280,18 @@ map <C-B> :make<CR>
 autocmd QuickFixCmdPost [^l]* nested cwindow
 autocmd QuickFixCmdPost    l* nested lwindow
 set errorformat=%*[^\"]\"%f\"%*\\D%l:\ %m,\"%f\"%*\\D%l:\ %m,%-G%f:%l:\ (Each\ undeclared\ identifier\ is\ reported\ only\ once,%-G%f:%l:\ for\ each\ function\ it\ appears\ in.),%-GIn\ file\ included\ from\ %f:%l:%c:,%-GIn\ file\ included\ from\ %f:%l:%c,%-GIn\ file\ included\ from\ %f:%l,%-Gfrom\ %f:%l:%c,%-Gfrom\ %f:%l,%f:%l:%c:%m,%f(%l):%m,%f:%l:%m,\"%f\"\\,\ line\ %l%*\\D%c%*[^\ ]\ %m,%D%*\\a[%*\\d]:\ Entering\ directory\ `%f',%X%*\\a[%*\\d]:\ Leaving\ directory\ `%f',%D%*\\a:\ Entering\ directory\ `%f',%X%*\\a:\ Leaving\ directory\ `%f',%DMaking\ %*\\a\ in\ %f,%f\|%l\|\ %m
+
+" ------------clang-format SECTION--------------"
+" map to <CTRL + I> in C++ code
+let g:clang_format#style_options = {
+		\ "BasedOnStyle" : "Google",
+		\ "ColumnLimit" : 140 }
+autocmd FileType c,cpp,objc nnoremap <C-i> :<C-u>ClangFormat<CR>
+autocmd FileType c,cpp,objc vnoremap <C-i> :ClangFormat<CR>
+" if you install vim-operator-user
+" autocmd FileType c,cpp,objc map <buffer><Leader>x <Plug>(operator-clang-format)
+" Toggle auto formatting:
+nmap <Leader>C :ClangFormatAutoToggle<CR>
 
 " ------------Syntastic SECTION-----------------"
 let g:syntastic_enable_signs=1
